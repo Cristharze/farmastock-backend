@@ -1,30 +1,51 @@
 package com.farmastock;
 
+import com.farmastock.sale.application.VentaService;
 import com.farmastock.sale.domain.Venta;
+import com.farmastock.sale.infrastructure.memory.VentaRepositoryEnMemoria;
+import com.farmastock.sale.port.VentaRepository;
 import com.farmastock.saledetail.domain.DetalleVenta;
+
 import java.math.BigDecimal;
 
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("=== Ejecutando Prueba del Dominio Java 21 ===");
+        System.out.println("=== TEST CAPÍTULO 02: PARKFLOW / FARMASTOCK ===");
 
-        // 1. Crear la entidad padre
-        Venta venta = new Venta(1, "F001-00001");
+        // Inyección manual de dependencias
+        VentaRepository repository = new VentaRepositoryEnMemoria();
+        VentaService service = new VentaService(repository);
 
-        // 2. Crear las entidades dependientes
-        DetalleVenta det1 = new DetalleVenta(10, 2, new BigDecimal("15.50"));
-        DetalleVenta det2 = new DetalleVenta(12, 1, new BigDecimal("45.00"));
+        // 1. Registro exitoso de primera venta
+        Venta v1 = new Venta(101, "F001-00001");
+        v1.agregarDetalle(new DetalleVenta(5, 2, new BigDecimal("12.50")));
+        service.registrar(v1);
 
-        // 3. Asociar mediante método de negocio
-        venta.agregarDetalle(det1);
-        venta.agregarDetalle(det2);
+        // 2. Registro exitoso de segunda venta
+        Venta v2 = new Venta(102, "F001-00002");
+        v2.agregarDetalle(new DetalleVenta(8, 1, new BigDecimal("30.00")));
+        service.registrar(v2);
 
-        // 4. Mostrar evidencia en consola
-        System.out.println("Comprobante: " + venta.getNroComprobante());
-        System.out.println("Estado: " + venta.getEstado());
-        System.out.println("Fecha de registro: " + venta.getFechaVenta());
-        System.out.println("Cantidad de productos: " + venta.getDetalles().size());
-        System.out.println("Total calculado: S/ " + venta.getTotalVenta());
+        System.out.println("Ventas registradas en el repositorio: " + service.listar().size());
+
+        // 3. Búsqueda por ID existente
+        Venta encontrada = service.obtenerPorId(1);
+        System.out.println("Venta encontrada #1 Comprobante: " + encontrada.getNroComprobante());
+
+        // 4. Caso negativo: Búsqueda por ID inexistente (debe capturar excepción)
+        try {
+            service.obtenerPorId(999);
+        } catch (RuntimeException ex) {
+            System.out.println("ERROR CONTROLADO BUSQUEDA: " + ex.getMessage());
+        }
+
+        // 5. Caso negativo: Intento de guardar comprobante duplicado
+        try {
+            Venta vDuplicada = new Venta(103, "F001-00001");
+            service.registrar(vDuplicada);
+        } catch (RuntimeException ex) {
+            System.out.println("ERROR CONTROLADO UNIQUE: " + ex.getMessage());
+        }
     }
 }

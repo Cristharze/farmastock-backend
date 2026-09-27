@@ -10,7 +10,7 @@
 * `com.farmastock.sale.domain.Venta`: Representa la entidad padre con sus atributos, total calculado y lista de detalles.
 * `com.farmastock.saledetail.domain.DetalleVenta`: Representa los ítems vendidos asociados a la venta.
 * `com.farmastock.sale.domain.EstadoVenta`: Enum con los estados válidos de la transacción (`CONFIRMADA`, `ANULADA`).
-* `com.farmastock.sale.domain.VentaRepository`: Interfaz que define el contrato de persistencia sin acoplarse a bases de datos.
+* `com.farmastock.sale.port.VentaRepository`: Interfaz que define el contrato de persistencia sin acoplarse a bases de datos.
 * `com.farmastock.Main`: Clase ejecutable que demuestra el flujo del dominio sin frameworks.
 
 ## Regla implementada
@@ -27,3 +27,27 @@
 
 * **¿Qué NO implementamos todavía?**
   No implementamos Spring Boot, anotaciones JPA (`@Entity`, `@Table`), `JpaRepository` ni conexión directa a la base de datos PostgreSQL desde Java. Todo el modelo está construido utilizando únicamente Java 21 puro.
+
+# Capítulo 02: Java 21 - Contratos, Colecciones y Errores Controlados
+
+## Identificación de Entidades
+* **Entidad padre:** `Venta` (`idVenta` - PK)
+* **Entidad dependiente:** `DetalleVenta` (`idVenta` - FK)
+* **Relación:** 1:N porque una venta puede contener múltiples productos/detalles, mientras que cada detalle pertenece exclusivamente a una venta.
+
+## Colección Elegida
+* **Uso de `Map<Integer, Venta>`:** Se eligió un `LinkedHashMap` en `VentaRepositoryEnMemoria` para almacenar las ventas en memoria. Permite búsquedas directas por ID con complejidad $O(1)$ y preserva el orden de inserción.
+* **Uso de `List<DetalleVenta>`:** Se usó para agrupar los ítems dentro de una `Venta`, ya que requiere mantener el orden de adición de productos.
+
+## Uso de Optional
+* `Optional<Venta> buscarPorId(Integer id)`: Retorna un contenedor que de forma explícita indica que el registro puede existir o no, evitando el uso de `null` y previniendo errores de tipo `NullPointerException`.
+
+## Excepciones Propias de Negocio
+* `VentaNoEncontradaException`: Se dispara cuando se consulta un ID de venta inexistente en el repositorio.
+* `NroComprobanteDuplicadoException`: Se dispara al intentar registrar una venta cuyo número de comprobante ya existe en el sistema (`UNIQUE`).
+
+## Manejo de Estados con Enum
+* `EstadoVenta`: Enum con valores `CONFIRMADA` y `ANULADA` que refleja la restricción `CHECK` de la base de datos y limita las transacciones a estados válidos.
+
+## Uso de Record
+* `RegistrarDetalleVentaCommand`: Utilizado como un DTO/Comando inmutable para transportar los datos requeridos para registrar un detalle de venta sin exponer lógica interna.
