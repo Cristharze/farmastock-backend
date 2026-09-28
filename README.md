@@ -51,3 +51,14 @@
 
 ## Uso de Record
 * `RegistrarDetalleVentaCommand`: Utilizado como un DTO/Comando inmutable para transportar los datos requeridos para registrar un detalle de venta sin exponer lógica interna.
+
+# Capítulo 03: Introducción a Spring Boot
+
+## Endpoints Creados
+* `GET /api/health`: Estado de salud de la aplicación e información del backend.
+* `GET /api/ventas/demo`: Endpoint demo que retorna una respuesta simulada de la entidad padre (`Venta`).
+
+## Conceptos Aplicados
+* **Inversión de Control (IoC):** Spring Boot administra los componentes de la aplicación (`@Service`, `@RestController`).
+* **Inyección de Dependencias (DI):** Los controladores reciben los servicios a través del constructor sin usar el operador `new`.
+* **Estructura Modular:** Organización por dominios de negocio (`sale`, `saledetail`, `shared`) preparando la arquitectura del sistema.

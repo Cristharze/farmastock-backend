@@ -1,0 +1,7 @@
+### 1. Prueba de Salud de la Aplicación
+GET http://localhost:8080/api/health
+Accept: application/json
+
+### 2. Prueba del Endpoint Demo de Ventas (Entidad Padre)
+GET http://localhost:8080/api/ventas/demo
+Accept: application/json
