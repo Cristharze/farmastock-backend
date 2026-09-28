@@ -62,3 +62,40 @@
 * **Inversión de Control (IoC):** Spring Boot administra los componentes de la aplicación (`@Service`, `@RestController`).
 * **Inyección de Dependencias (DI):** Los controladores reciben los servicios a través del constructor sin usar el operador `new`.
 * **Estructura Modular:** Organización por dominios de negocio (`sale`, `saledetail`, `shared`) preparando la arquitectura del sistema.
+
+## Capítulo 04: Capa de Adaptadores Web (API REST)
+
+En este capítulo se implementó la capa de entrada web (*Inbound Adapter*) aplicando **Arquitectura Hexagonal** en Spring Boot 3.2.3. Se expusieron los endpoints REST para la entidad `Venta`, asegurando el desacoplamiento con la capa de dominio mediante DTOs (*Data Transfer Objects*) y aplicando validaciones de entrada con `jakarta.validation`.
+
+---
+
+### 🛠️ Componentes Implementados
+
+- **`VentaController`**: Controlador REST (`@RestController`) mapeado en `/api/ventas` para gestionar peticiones HTTP.
+- **`CrearVentaRequest`**: DTO de entrada (*record*) que valida los datos recibidos (`@NotNull`, `@NotBlank`, `@DecimalMin`).
+- **`VentaResponse`**: DTO de salida (*record*) para formatear las respuestas enviadas al cliente.
+- **`VentaService`**: Servicio de aplicación adaptado para integrar las peticiones REST con la lógica del dominio y el repositorio en memoria.
+
+---
+
+### 📌 Tabla de Endpoints
+
+| Método HTTP | Endpoint | Descripción | Estado Esperado |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/ventas` | Registra una nueva venta validando sus atributos | `201 Created` / `400 Bad Request` |
+| `GET` | `/api/ventas` | Consulta y devuelve el listado completo de ventas | `200 OK` |
+| `GET` | `/api/ventas/{id}` | Busca una venta específica por su ID | `200 OK` / `404 Not Found` |
+
+---
+
+### 📝 Estructura de Peticiones y Respuestas
+
+#### 1. Crear Venta (`POST /api/ventas`)
+
+**Cuerpo de la Petición (`application/json`):**
+```json
+{
+  "idUsuarioCajero": 1,
+  "nroComprobante": "F001-00001",
+  "totalVenta": 145.80
+}
