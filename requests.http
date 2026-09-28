@@ -1,7 +1,29 @@
-### 1. Prueba de Salud de la Aplicación
-GET http://localhost:8080/api/health
-Accept: application/json
+### 1. Crear Venta Válida (201 Created)
+POST http://localhost:8080/api/ventas
+Content-Type: application/json
 
-### 2. Prueba del Endpoint Demo de Ventas (Entidad Padre)
-GET http://localhost:8080/api/ventas/demo
-Accept: application/json
+{
+  "idUsuarioCajero": 1,
+  "nroComprobante": "F001-00001",
+  "totalVenta": 145.80
+}
+
+### 2. Crear Venta Inválida (400 Bad Request)
+POST http://localhost:8080/api/ventas
+Content-Type: application/json
+
+{
+  "idUsuarioCajero": null,
+  "nroComprobante": "",
+  "totalVenta": 0.00
+}
+
+### 3. Listar Ventas (200 OK)
+GET http://localhost:8080/api/ventas
+
+### 4. Buscar Venta por ID existente (200 OK)
+GET http://localhost:8080/api/ventas/1
+
+### 5. Buscar Venta por ID inexistente (404 Not Found)
+GET http://localhost:8080/api/ventas/999
+

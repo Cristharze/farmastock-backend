@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface VentaRepository {
     Venta guardar(Venta venta);
-    Optional<Venta> buscarPorId(Integer id);
-    List<Venta> listarTodos();
+    List<Venta> obtenerTodas();
+    Optional<Venta> obtenerPorId(Integer id);
     boolean existePorNroComprobante(String nroComprobante);
 }

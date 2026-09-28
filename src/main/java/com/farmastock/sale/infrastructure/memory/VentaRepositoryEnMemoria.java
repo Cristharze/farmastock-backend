@@ -2,40 +2,38 @@ package com.farmastock.sale.infrastructure.memory;
 
 import com.farmastock.sale.domain.Venta;
 import com.farmastock.sale.port.VentaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
+@Repository
 public class VentaRepositoryEnMemoria implements VentaRepository {
 
-    private final Map<Integer, Venta> datos = new LinkedHashMap<>();
-    private Integer autoincrementId = 1;
+    private final List<Venta> lista = new ArrayList<>();
 
     @Override
     public Venta guardar(Venta venta) {
-        if (venta.getIdVenta() == null) {
-            venta.setIdVenta(autoincrementId++);
-        }
-        datos.put(venta.getIdVenta(), venta);
+        lista.add(venta);
         return venta;
     }
 
     @Override
-    public Optional<Venta> buscarPorId(Integer id) {
-        return Optional.ofNullable(datos.get(id));
+    public List<Venta> obtenerTodas() {
+        return List.copyOf(lista);
     }
 
     @Override
-    public List<Venta> listarTodos() {
-        return new ArrayList<>(datos.values());
+    public Optional<Venta> obtenerPorId(Integer id) {
+        return lista.stream()
+                .filter(v -> v.getIdVenta() != null && v.getIdVenta().equals(id))
+                .findFirst();
     }
 
     @Override
     public boolean existePorNroComprobante(String nroComprobante) {
-        return datos.values().stream()
-                .anyMatch(v -> v.getNroComprobante().equalsIgnoreCase(nroComprobante));
+        return lista.stream()
+                .anyMatch(v -> v.getNroComprobante() != null && v.getNroComprobante().equalsIgnoreCase(nroComprobante));
     }
 }

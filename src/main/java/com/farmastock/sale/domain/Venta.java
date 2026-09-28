@@ -19,6 +19,7 @@ public class Venta {
     // Colección privada para la relación 1:N
     private final List<DetalleVenta> detalles = new ArrayList<>();
 
+    // Constructor base (Capítulos 01 y 02)
     public Venta(Integer idUsuarioCajero, String nroComprobante) {
         if (nroComprobante == null || nroComprobante.isBlank()) {
             throw new IllegalArgumentException("El número de comprobante es obligatorio.");
@@ -28,6 +29,15 @@ public class Venta {
         this.fechaVenta = LocalDateTime.now();
         this.estado = EstadoVenta.CONFIRMADA;
         this.totalVenta = BigDecimal.ZERO;
+    }
+
+    // Constructor extendido (Para registrar desde API REST en Capítulo 04)
+    public Venta(Integer idVenta, Integer idUsuarioCajero, String nroComprobante, BigDecimal totalVenta) {
+        this(idUsuarioCajero, nroComprobante);
+        this.idVenta = idVenta;
+        if (totalVenta != null) {
+            this.totalVenta = totalVenta;
+        }
     }
 
     // Método de negocio para proteger la agregación de ítems
@@ -48,9 +58,12 @@ public class Venta {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    // Getters
+    // Getters y Setters
     public Integer getIdVenta() { return idVenta; }
     public void setIdVenta(Integer idVenta) { this.idVenta = idVenta; }
+
+    // Alias genérico para compatibilidad
+    public Integer getId() { return idVenta; }
 
     public Integer getIdUsuarioCajero() { return idUsuarioCajero; }
     public String getNroComprobante() { return nroComprobante; }
